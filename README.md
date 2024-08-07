@@ -54,7 +54,7 @@ This command will download the MP3 file for the word "собака" and save it 
 
 ## How It Works
 
-1. **Strip Accents:** The application removes any acute accents from the input word using Unicode normalization.
+1. **Strip Accents:** The application removes syllabic stress marks from the input word using Unicode normalization.
 2. **API Request:** Constructs a request URL for the Forvo API and retrieves pronunciation data.
 3. **Parse JSON:** Parses the JSON response to extract pronunciation information.
 4. **Calculate Scores:** Calculates scores for each pronunciation based on the number of positive votes and special user bonuses.
@@ -78,6 +78,13 @@ cargo test
 - **clap:** Command-line argument parsing.
 - **unicode-normalization:** Unicode normalization for string manipulation.
 - **futures:** Asynchronous programming utilities.
+
+## Caveats
+
+Just a few caveats about this project:
+
+- I've tested this only on macOS. YMMV if you are on another platform
+- I only have need of Russian language pronunciations which is what this downloads. If you need other languages, feel free to modify accordingly.
 
 ## License
 
