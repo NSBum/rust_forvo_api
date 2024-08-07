@@ -6,6 +6,11 @@ use rust_forvo_api::{create_forvo_url, download_mp3, strip_acute, parse_pronunci
 /// Struct to represent command-line arguments using clap
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
+#[command(
+    author = "Alan Duncan <duncan.alan@me.com>",
+    version = "0.1.2",
+    about = "Downloads Russian pronunciation files from Forvo",
+    long_about = None)]
 struct Args {
     /// Word to get the pronunciation for
     #[arg(short, long)]
