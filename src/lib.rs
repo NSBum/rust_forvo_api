@@ -1,3 +1,5 @@
+pub mod config;
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
