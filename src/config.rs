@@ -6,7 +6,8 @@ use std::path::PathBuf;
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct Config {
     pub api_key: Option<String>,
-
+    pub anki2_path: Option<String>,
+    pub default_collection: Option<String>,
 }
 
 pub fn get_config_path() -> PathBuf {
