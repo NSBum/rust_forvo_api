@@ -152,27 +152,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let path = download_mp3(&max_pronunciation_url, &dlpath, &stripped_word).await?;
             println!("Pronunciation downloaded to: {}", path);
 
-            // move the pronunciation file physically into the Anki2 collection
-            // do we have an anki2_path and a collection?
-           if let Some(ankipath) = anki2_path {
-               // we have an Anki2 path
-               // check if we have a collection argument
-               let collection_name = match &args.collection {
-                   Some(collection_name) => collection_name.clone(),
-                   None => {
-                       // see if it is stored in config
-                       match &config.default_collection {
-                           Some(name) => name.clone(),
-                           None => {
-                               println!("No collection name provided or saved. Will not be stored in Anki");
-                               return Ok(());
-                           }
-                       }
-                   }
-               };
-               // Now store mp3 in the collection
-               //let final_collection_path = format!("{}/{}/collection.media/{}.mp3",ankipath, collection_name, word);
-           }
         } else {
             println!("No pronunciation found with a high score.");
         }
