@@ -86,6 +86,12 @@ Just a few caveats about this project:
 - I've tested this only on macOS. YMMV if you are on another platform
 - I only have need of Russian language pronunciations which is what this downloads. If you need other languages, feel free to modify accordingly.
 
+## Roadmap
+
+- move downloaded pronunciation file into Anki collection
+- save the collection setting
+- allow for other languages
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -96,7 +102,7 @@ Contributions are welcome! Please open an issue or submit a pull request if you'
 
 ## Contact
 
-For questions or support, please contact [your-email@example.com](mailto:your-email@example.com).
+For questions or support, please contact [duncan.alan@me.com](mailto:duncan.alan@me.com).
 
 ### Key Changes
 
