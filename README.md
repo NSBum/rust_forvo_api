@@ -88,8 +88,6 @@ Just a few caveats about this project:
 
 ## Roadmap
 
-- move downloaded pronunciation file into Anki collection
-- save the collection setting
 - allow for other languages
 
 ## License
