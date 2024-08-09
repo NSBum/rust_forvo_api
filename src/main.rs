@@ -3,8 +3,6 @@ use reqwest::Client;
 use std::error::Error;
 use rust_forvo_api::{create_forvo_url, download_mp3, strip_acute, parse_pronunciations, find_highest_score};
 use rust_forvo_api::config::{save_config, load_config};
-// Hold off on this feature for now
-//use rust_forvo_api::ankiconnect::{store_mp3_in_collection};
 
 /// Struct to represent command-line arguments using clap
 #[derive(Parser, Debug)]
@@ -22,10 +20,6 @@ struct Args {
     #[arg(short, long)]
     key: Option<String>,
 
-    /// Anki collection name
-    #[arg(short, long)]
-    collection: Option<String>,
-
     /// Download location
     #[arg(short, long)]
     dlpath: Option<String>,
@@ -33,14 +27,6 @@ struct Args {
     /// Save the API key for future use
     #[arg(long)]
     keysave: Option<String>,
-
-    /// Save the collection as default collection
-    #[arg(long)]
-    collectionsave: Option<String>,
-
-    /// Set Anki2 path
-    #[arg(long)]
-    set_anki2_path: Option<String>,
 }   
 
 #[tokio::main]
@@ -62,44 +48,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         };
         return Ok(());
     }
-
-    // Handle saving the default_collection
-    if let Some(collection) = args.collectionsave {
-        config.default_collection = Some(collection);
-        match save_config(&config) {
-            Ok(_) => println!("Default collection saved"),
-            Err(e) => {
-                eprintln!("Error saving default collection - {}", e);
-                return Ok(());
-            }
-        };
-        return Ok(());
-    }
-
-    // If user setting the Anki2 path then allow that to be set and exit
-    if let Some(anki2_path) = args.set_anki2_path {
-        config.anki2_path = Some(anki2_path);
-        match save_config(&config) {
-            Ok(_) => println!("Anki2 path saved"),
-            Err(e) => {
-                eprintln!("Error saving Anki2 path - {}", e);
-                return Ok(());
-            }
-        };
-        return Ok(());
-    }
-
-
-    // Try to load the Anki2 collection path from config
-    // but if config doesn't have it, we have to assume
-    // that the user wants to just download the file and not
-    // move it into an Anki collection
-    let anki2_path = &config.anki2_path;
-    match anki2_path {
-        Some(path) => println!("Anki2 path is {}", path),
-        None => println!("Anki2 path has never been set"),
-    }
-            
 
     // Use provided API key or try to load from config
     let api_key = match &args.key {
@@ -145,11 +93,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let pronunciations = parse_pronunciations(&json);
 
         // Find the pronunciation with the highest score
-        if let Some(highest_score_pronunciation) = find_highest_score(&pronunciations) {
-            let max_pronunciation_url = highest_score_pronunciation.pathmp3.clone();
+        if let Some(maxp) = find_highest_score(&pronunciations) {
+            let maxp_url = maxp.pathmp3.clone();
             
             // Download the MP3 file with the highest score
-            let path = download_mp3(&max_pronunciation_url, &dlpath, &stripped_word).await?;
+            let path = download_mp3(&maxp_url, &dlpath, &stripped_word).await?;
             println!("Pronunciation downloaded to: {}", path);
 
         } else {

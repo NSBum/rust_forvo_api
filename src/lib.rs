@@ -1,5 +1,4 @@
 pub mod config;
-pub mod ankiconnect;
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
