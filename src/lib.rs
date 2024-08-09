@@ -15,8 +15,65 @@ pub struct Pronunciation {
     pub score: i32,
 }
 
+/// Represents a pronunciation retrieved from the Forvo API.
+///
+/// This struct contains various details about a pronunciation, including the 
+/// unique ID, the number of hits, the username of the contributor, the path 
+/// to the MP3 file, the number of positive votes, and a calculated score 
+/// based on certain criteria.
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
+pub struct Pronunciation {
+    /// The unique ID of the pronunciation.
+    pub id: i32,
+
+    /// The number of times this pronunciation has been accessed or used.
+    pub hits: i32,
+
+    /// The username of the person who contributed this pronunciation.
+    pub username: String,
+
+    /// The URL path to the MP3 file containing the pronunciation.
+    pub pathmp3: String,
+
+    /// The number of positive votes this pronunciation has received.
+    pub num_positive_votes: i32,
+
+    /// The calculated score for this pronunciation, factoring in votes and special users.
+    pub score: i32,
+}
+
 impl Pronunciation {
-    /// Constructor for `Pronunciation` that calculates the score
+    /// Creates a new `Pronunciation` instance.
+    ///
+    /// This constructor calculates the score for the pronunciation by adding 
+    /// the number of positive votes to an additional increment if the 
+    /// contributor is a recognized special user.
+    ///
+    /// # Parameters
+    ///
+    /// * `id` - The unique ID of the pronunciation.
+    /// * `hits` - The number of times this pronunciation has been accessed or used.
+    /// * `username` - The username of the person who contributed this pronunciation.
+    /// * `pathmp3` - The URL path to the MP3 file containing the pronunciation.
+    /// * `num_positive_votes` - The number of positive votes this pronunciation has received.
+    ///
+    /// # Returns
+    ///
+    /// A new `Pronunciation` instance with the provided data and a calculated score.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let pronunciation = Pronunciation::new(
+    ///     123,
+    ///     50,
+    ///     "1640max".to_string(),
+    ///     "http://example.com/pronunciation.mp3".to_string(),
+    ///     5
+    /// );
+    ///
+    /// assert_eq!(pronunciation.score, 7); // 5 votes + 2 bonus points
+    /// ```
     pub fn new(id: i32, hits: i32, username: String, pathmp3: String, num_positive_votes: i32) -> Self {
         let score = num_positive_votes + Self::calculate_score_increment(&username);
         Self {
@@ -29,19 +86,7 @@ impl Pronunciation {
         }
     }
 
-    /// Calculate score increment based on username
-    fn calculate_score_increment(username: &str) -> i32 {
-        let special_users = [
-            "1640max", "Spinster", "szurzuncik", "ae5s", "Shady_arc", "zhivanova", "Selene71",
-        ];
-
-        if special_users.contains(&username) {
-            2
-        } else {
-            0
-        }
-    }
-}
+    /// Calculates the score increment based on th
 
 /// Strip acute accents from words using regex and unicode normalization
 pub fn strip_acute(word: &str) -> String {
