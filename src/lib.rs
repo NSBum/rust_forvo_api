@@ -15,6 +15,34 @@ pub struct Pronunciation {
     pub score: i32,
 }
 
+impl Pronunciation {
+    /// Constructor for `Pronunciation` that calculates the score
+    pub fn new(id: i32, hits: i32, username: String, pathmp3: String, num_positive_votes: i32) -> Self {
+        let score = num_positive_votes + Self::calculate_score_increment(&username);
+        Self {
+            id,
+            hits,
+            username,
+            pathmp3,
+            num_positive_votes,
+            score,
+        }
+    }
+
+    /// Calculate score increment based on username
+    fn calculate_score_increment(username: &str) -> i32 {
+        let special_users = [
+            "1640max", "Spinster", "szurzuncik", "ae5s", "Shady_arc", "zhivanova", "Selene71",
+        ];
+
+        if special_users.contains(&username) {
+            2
+        } else {
+            0
+        }
+    }
+}
+
 /// Strip acute accents from words using regex and unicode normalization
 pub fn strip_acute(word: &str) -> String {
     let regex = Regex::new(r"\p{Mn}").unwrap();
@@ -34,19 +62,6 @@ pub fn find_highest_score(pronunciations: &[Pronunciation]) -> Option<&Pronuncia
     pronunciations.iter().max_by_key(|p| p.score)
 }
 
-/// Calculate score increment based on username
-pub fn calculate_score_increment(username: &str) -> i32 {
-    let special_users = [
-        "1640max", "Spinster", "szurzuncik", "ae5s", "Shady_arc", "zhivanova", "Selene71",
-    ];
-
-    if special_users.contains(&username) {
-        2
-    } else {
-        0
-    }
-}
-
 /// Parse a single item from JSON into a Pronunciation struct
 pub fn parse_pronunciation_item(item: &serde_json::Value) -> Pronunciation {
     let id = item["id"].as_i64().unwrap_or(0) as i32;
@@ -55,16 +70,7 @@ pub fn parse_pronunciation_item(item: &serde_json::Value) -> Pronunciation {
     let pathmp3 = item["pathmp3"].as_str().unwrap_or("").to_string();
     let num_positive_votes = item["num_positive_votes"].as_i64().unwrap_or(0) as i32;
 
-    let score = num_positive_votes + calculate_score_increment(&username);
-
-    Pronunciation {
-        id,
-        hits,
-        username,
-        pathmp3,
-        num_positive_votes,
-        score,
-    }
+    Pronunciation::new(id, hits, username, pathmp3, num_positive_votes)
 }
 
 /// Deserialize JSON to a vector of Pronunciation structs
@@ -119,7 +125,7 @@ pub async fn download_mp3(url: &str, directory: &str, word: &str) -> Result<Stri
 #[cfg(test)]
 mod tests {
     use crate::{
-        create_forvo_url, strip_acute, parse_pronunciation_item, calculate_score_increment,
+        create_forvo_url, strip_acute, parse_pronunciation_item,
         Pronunciation, parse_pronunciations,
     };
     use serde_json::json;
@@ -138,12 +144,6 @@ mod tests {
         let expected: &str = "https://apifree.forvo.com/key/test_api_key/format/json/action/word-pronunciations/word/собака/language/ru";
         let actual = create_forvo_url(api_key, word);
         assert_eq!(actual, expected);
-    }
-
-    #[test]
-    fn test_calculate_score_increment() {
-        assert_eq!(calculate_score_increment("1640max"), 2);
-        assert_eq!(calculate_score_increment("unknown_user"), 0);
     }
 
     #[test]
@@ -212,5 +212,20 @@ mod tests {
         let actual = parse_pronunciations(&json_data);
         assert_eq!(actual, expected);
     }
+
+    #[test]
+    fn test_pronunciation_new() {
+        let id = 123;
+        let hits = 50;
+        let username = "1640max".to_string();
+        let pathmp3 = "http://example.com/pronunciation.mp3".to_string();
+        let num_positive_votes = 5;
+
+        let pronunciation = Pronunciation::new(id, hits, username, pathmp3, num_positive_votes);
+
+        assert_eq!(pronunciation.score, 7); // 5 votes + 2 bonus
+    }
+
+    
 }
 
