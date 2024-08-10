@@ -4,17 +4,6 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
 
-/// Structure to represent a pronunciation
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
-pub struct Pronunciation {
-    pub id: i32,
-    pub hits: i32,
-    pub username: String,
-    pub pathmp3: String,
-    pub num_positive_votes: i32,
-    pub score: i32,
-}
-
 /// Represents a pronunciation retrieved from the Forvo API.
 ///
 /// This struct contains various details about a pronunciation, including the 
@@ -64,6 +53,8 @@ impl Pronunciation {
     /// # Examples
     ///
     /// ```
+    /// use rust_forvo_api::Pronunciation;
+    ///
     /// let pronunciation = Pronunciation::new(
     ///     123,
     ///     50,
@@ -86,7 +77,23 @@ impl Pronunciation {
         }
     }
 
-    /// Calculates the score increment based on th
+    /// Calculates the score increment based on the username.
+    ///
+    /// This method checks if the username belongs to a list of recognized special users.
+    /// If the username is in this list, the method returns a score increment of 2.
+    /// Otherwise, it returns 0.
+    fn calculate_score_increment(username: &str) -> i32 {
+        let special_users = [
+            "1640max", "Spinster", "szurzuncik", "ae5s", "Shady_arc", "zhivanova", "Selene71",
+        ];
+
+        if special_users.contains(&username) {
+            2
+        } else {
+            0
+        }
+    }
+}
 
 /// Strip acute accents from words using regex and unicode normalization
 pub fn strip_acute(word: &str) -> String {
