@@ -169,7 +169,7 @@ pub async fn download_mp3(url: &str, directory: &str, word: &str) -> Result<Stri
         file.write_all(&chunk).await?;
     }
 
-    println!("File downloaded successfully to {:?}", file_path);
+    //println!("File downloaded successfully to {:?}", file_path);
 
     Ok(file_path.to_string_lossy().to_string())
 }
